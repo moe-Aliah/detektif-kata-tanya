@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detektif Kata Tanya - Permainan Interaktif BM</title>
+  <style>
+    :root {
+      --primary: #4e54c8;
+      --secondary: #8f94fb;
+      --accent: #ffd166;
+      --success: #06d6a0;
+      --danger: #ef476f;
+      --card-bg: #ffffff;
+      --text: #2b2d42;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Fredoka', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--text);
+      padding: 15px;
+    }
+
+    .game-container {
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+      width: 100%;
+      max-width: 680px;
+      padding: 25px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header-badge {
+      background: var(--accent);
+      color: #333;
+      display: inline-block;
+      padding: 6px 18px;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      margin: 5px 0 10px 0;
+      color: var(--primary);
+      font-size: 1.8rem;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    /* Form Styles */
+    .player-form {
+      background: #f8f9fa;
+      border: 2px dashed #cbd5e1;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f0f3ff;
+      padding: 10px 18px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+
+    .player-info-tag {
+      background: var(--primary);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    /* Question Box */
+    .question-card {
+      background: #fff8e7;
+      border: 3px solid #f4a261;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .level-badge {
+      position: absolute;
+      top: -12px;
+      left: 15px;
+      background: #e76f51;
+      color: white;
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .question-text {
+      font-size: 1.2rem;
+      line-height: 1.5;
+      font-weight: 600;
+      white-space: pre-line;
+    }
+
+    .context-box {
+      background: #eef2ff;
+      border-left: 4px solid var(--primary);
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      text-align: left;
+      width: 100%;
+    }
+
+    /* Options Grid */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .btn-option {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      padding: 14px 18px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text);
+      text-align: left;
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-option:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+    }
+
+    .opt-number {
+      background: #e2e8f0;
+      color: #475569;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .btn-option.correct {
+      background: var(--success) !important;
+      color: white !important;
+      border-color: var(--success) !important;
+    }
+    .btn-option.correct .opt-number {
+      background: rgba(255,255,255,0.3);
+      color: white;
+    }
+
+    .btn-option.wrong {
+      background: var(--danger) !important;
+      color: white !important;
+      border-color: var(--danger) !important;
+    }
+    .btn-option.wrong .opt-number {
+      background: rgba(255,255,255,0.3);
+      color: white;
+    }
+
+    /* Feedback Box */
+    .feedback-box {
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+      display: none;
+      font-weight: 600;
+    }
+    .feedback-box.show { display: block; }
+    .feedback-box.correct-bg { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .feedback-box.wrong-bg { background: #ffe4e6; color: #9f1239; border: 1px solid #fecdd3; }
+
+    /* Buttons */
+    .btn-main {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(78, 84, 200, 0.3);
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .btn-main:hover {
+      background: #3c409e;
+      transform: translateY(-2px);
+    }
+
+    .btn-admin {
+      background: transparent;
+      border: 1px dashed #94a3b8;
+      color: #64748b;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    .btn-admin:hover { background: #f8fafc; color: #334155; }
+
+    /* Screen Management */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* Score Badge */
+    .score-circle {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 15px auto;
+      color: #333;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+    .score-number { font-size: 2.2rem; font-weight: bold; line-height: 1; }
+    .score-total { font-size: 0.85rem; color: #666; margin-top: 4px; }
+
+    /* Sync Status */
+    .sync-status {
+      font-size: 0.85rem;
+      padding: 8px;
+      border-radius: 8px;
+      margin-top: 10px;
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    @media (min-width: 520px) {
+      .options-grid.two-cols {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-container">
+    
+    <!-- SKRIN MULA / PROFIL PLAYER -->
+    <div id="start-screen" class="screen active">
+      <div class="header-badge">Tatabahasa Bahasa Melayu</div>
+      <h1>🕵️‍♂️ Detektif Kata Tanya</h1>
+      <p class="subtitle">Selesaikan kes misteri dengan kata tanya berpartikel <b>-kah</b> yang tepat!</p>
+
+      <form id="profile-form" onsubmit="event.preventDefault(); validateAndStart();">
+        <div class="player-form">
+          <div class="form-group">
+            <label for="player-name">👤 Nama Murid:</label>
+            <input type="text" id="player-name" class="form-control" placeholder="Contoh: Muhammad Amir" required>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label for="player-class">🏫 Kelas / Tahun:</label>
+            <input type="text" id="player-class" class="form-control" placeholder="Contoh: 2 Cerdik / 3 Mawar" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-main">🚀 Mula Misi Detektif!</button>
+      </form>
+
+      <button type="button" class="btn-admin" onclick="configureGoogleSheets()">⚙️ Tetapan Guru (Google Sheets)</button>
+    </div>
+
+    <!-- SKRIN PERMAINAN / QUIZ -->
+    <div id="quiz-screen" class="screen">
+      <div class="stats-bar">
+        <span>Soalan: <span id="current-q">1</span>/15</span>
+        <span class="player-info-tag" id="player-tag">Ahmad (2C)</span>
+        <span>Mata: <span id="score">0</span></span>
+      </div>
+
+      <div class="question-card">
+        <span class="level-badge" id="level-badge">Aras 1</span>
+        <div id="context-container"></div>
+        <div class="question-text" id="question">Loading...</div>
+      </div>
+
+      <div class="options-grid" id="options-container">
+        <!-- Pilihan jawapan dimasukkan secara dinamik -->
+      </div>
+
+      <div id="feedback-box" class="feedback-box"></div>
+    </div>
+
+    <!-- SKRIN PENAMAT / KEPUTUSAN -->
+    <div id="result-screen" class="screen">
+      <div class="header-badge">Misi Selesai!</div>
+      <h1 style="margin-bottom:5px;">Laporan Detektif</h1>
+      <p id="result-player-info" style="font-weight:bold; color:#475569; margin-top:0;"></p>
+
+      <div class="score-circle">
+        <span class="score-number" id="final-score">0</span>
+        <span class="score-total">daripada 150 mata</span>
+      </div>
+
+      <p id="feedback-msg" style="font-size: 1.1rem; font-weight: bold; margin: 15px 0;"></p>
+
+      <div id="sync-status" class="sync-status">🔄 Menghantar skor ke sistem guru...</div>
+
+      <br>
+      <button class="btn-main" onclick="restartGame()">Main Semula</button>
+    </div>
+
+  </div>
+
+  <script>
+    // URL Google Sheets API (Boleh disimpan di LocalStorage)
+    let googleScriptUrl = localStorage.getItem('detektif_gs_url') || '';
+
+    // Bank Soalan 15 Soalan (Wajaran 7:4:4)
+    const questions = [
+      // --- ARAS 1: Isi Tempat Kosong (Soalan 1 - 7) ---
+      {
+        level: "Aras 1: Isi Tempat Kosong",
+        context: null,
+        q: "_______ nama guru baharu yang mengajar kelas Tahun 2 Cerdik itu?",
+        options: ["Siapakah", "Apakah", "Bilakah", "Berapakah"],
+        answer: "Siapakah",
+        explanation: "Gunakan 'Siapakah' untuk menanyakan manusia/orang di awal ayat."
+      },
+      {
+        level: "Aras 1: Isi Tempat Kosong",
+        context: null,
+        q: "_______ yang ada di dalam beg sekolah kamu itu?",
+        options: ["Apakah", "Siapakah", "Di manakah", "Mengapakah"],
+        answer: "Apakah",
+        explanation: "Gunakan 'Apakah' untuk menanyakan benda atau haiwan di awal ayat."
+      },
+      {
+        level: "Aras 1: Isi Tempat Kosong",
+        context: null,
+        q: "_______ rumah nenek kamu terletak?",
+        options: ["Di manakah", "Bilakah", "Bagaimanakah", "Siapakah"],
+        answer: "Di manakah",
+        explanation: "Gunakan 'Di manakah' untuk menanyakan tempat di awal ayat."
+      },
+      {
+        level: "Aras 1: Isi Tempat Kosong",
+        context: null,
+        q: "_______ harga sebatang pensel warna ini?",
+        options: ["Berapakah", "Apakah", "Mengapakah", "Di manakah"],
+        answer: "Berapakah",
+        explanation: "Gunakan 'Berapakah' untuk menanyakan bilangan atau jumlah di awal ayat."
+      },
+      {
+        level: "Aras 1: Isi Tempat Kosong",
+        context: null,
+        q: "_______ bilik darjah kamu sangat bersih dan kemas?",
+        options: ["Mengapakah", "Siapakah", "Berapakah", "Bilakah"],
+        answer: "Mengapakah",
+        explanation: "Gunakan 'Mengapakah' untuk menanyakan sebab atau alasan di awal ayat."
+      },
+      {
+        level: "Aras 1: Isi Tempat Kosong",
+        context: null,
+        q: "_______ cara membuat kapal terbang kertas ini?",
+        options: ["Bagaimanakah", "Apakah", "Bilakah", "Siapakah"],
+        answer: "Bagaimanakah",
+        explanation: "Gunakan 'Bagaimanakah' untuk menanyakan cara atau kaedah di awal ayat."
+      },
+      {
+        level: "Aras 1: Isi Tempat Kosong",
+        context: null,
+        q: "_______ sekolah kita akan mengadakan Hari Sukan?",
+        options: ["Bilakah", "Di manakah", "Berapakah", "Mengapakah"],
+        answer: "Bilakah",
+        explanation: "Gunakan 'Bilakah' untuk menanyakan masa atau tarikh di awal ayat."
+      },
+
+      // --- ARAS 2: Pilih Ayat Tanya yang Betul (Soalan 8 - 11) ---
+      {
+        level: "Aras 2: Pilih Ayat Tanya Betul",
+        context: "Misi: Pilih ayat tanya yang betul tatabahasanya dari segi kata tanya dan partikel -kah.",
+        q: "Pilih ayat tanya yang tepat:",
+        options: [
+          "Bagaimanakah keadaan kesihatan datuk kamu di kampung?", // Betul (Pilihan 1)
+          "Siapakah keadaan kesihatan datuk kamu di kampung?",
+          "Apakah keadaan kesihatan datuk kamu di kampung?",
+          "Berapakah keadaan kesihatan datuk kamu di kampung?"
+        ],
+        answer: "Bagaimanakah keadaan kesihatan datuk kamu di kampung?",
+        explanation: "'Bagaimanakah' digunakan untuk menanyakan keadaan/khabar."
+      },
+      {
+        level: "Aras 2: Pilih Ayat Tanya Betul",
+        context: "Misi: Pilih ayat tanya yang betul tatabahasanya dari segi kata tanya dan partikel -kah.",
+        q: "Pilih ayat tanya yang tepat:",
+        options: [
+          "Bilakah murid-murid beratur di kantin?",
+          "Di manakah murid-murid beratur di kantin?",
+          "Mengapakah murid-murid perlu beratur di kantin?", // Betul (Pilihan 3)
+          "Apakah murid-murid perlu beratur di kantin?"
+        ],
+        answer: "Mengapakah murid-murid perlu beratur di kantin?",
+        explanation: "'Mengapakah' digunakan untuk menanyakan sebab/tujuan."
+      },
+      {
+        level: "Aras 2: Pilih Ayat Tanya Betul",
+        context: "Misi: Pilih ayat tanya yang betul tatabahasanya dari segi kata tanya dan partikel -kah.",
+        q: "Pilih ayat tanya yang tepat:",
+        options: [
+          "Siapakah ekor kucing yang dipelihara oleh Imran?",
+          "Bagaimanakah ekor kucing yang dipelihara oleh Imran?",
+          "Bilakah ekor kucing yang dipelihara oleh Imran?",
+          "Berapakah ekor kucing yang dipelihara oleh Imran?" // Betul (Pilihan 4)
+        ],
+        answer: "Berapakah ekor kucing yang dipelihara oleh Imran?",
+        explanation: "'Berapakah' digunakan untuk menanyakan jumlah/bilangan haiwan."
+      },
+      {
+        level: "Aras 2: Pilih Ayat Tanya Betul",
+        context: "Misi: Pilih ayat tanya yang betul tatabahasanya dari segi kata tanya dan partikel -kah.",
+        q: "Pilih ayat tanya yang tepat:",
+        options: [
+          "Apakah tempat tinggal Cikgu Hajar?",
+          "Di manakah tempat tinggal Cikgu Hajar?", // Betul (Pilihan 2)
+          "Siapakah tempat tinggal Cikgu Hajar?",
+          "Bilakah tempat tinggal Cikgu Hajar?"
+        ],
+        answer: "Di manakah tempat tinggal Cikgu Hajar?",
+        explanation: "'Di manakah' digunakan untuk menanyakan lokasi/tempat."
+      },
+
+      // --- ARAS 3: Padan Ayat Tanya Berdasarkan Jawapan (Soalan 12 - 15) ---
+      {
+        level: "Aras 3: Padanan Jawapan",
+        context: "💬 Jawapan yang diberi: \"Supaya tangan kita bersih daripada kuman.\"",
+        q: "Apakah ayat tanya yang sesuai bagi jawapan di atas?",
+        options: [
+          "Bagaimanakah kita perlu mencuci tangan sebelum makan?",
+          "Berapakah kali kita perlu mencuci tangan sebelum makan?",
+          "Mengapakah kita perlu mencuci tangan sebelum makan?", // Betul (Pilihan 3)
+          "Di manakah kita perlu mencuci tangan sebelum makan?"
+        ],
+        answer: "Mengapakah kita perlu mencuci tangan sebelum makan?",
+        explanation: "Jawapan menyatakan sebab ('Supaya...'), maka soalan mesti menggunakan 'Mengapakah'."
+      },
+      {
+        level: "Aras 3: Padanan Jawapan",
+        context: "💬 Jawapan yang diberi: \"Aina yang memenangi pertandingan melukis semalam.\"",
+        q: "Apakah ayat tanya yang sesuai bagi jawapan di atas?",
+        options: [
+          "Siapakah yang memenangi pertandingan melukis semalam?", // Betul (Pilihan 1)
+          "Apakah yang memenangi pertandingan melukis semalam?",
+          "Bilakah yang memenangi pertandingan melukis semalam?",
+          "Bagaimanakah Aina memenangi pertandingan melukis semalam?"
+        ],
+        answer: "Siapakah yang memenangi pertandingan melukis semalam?",
+        explanation: "Jawapan merujuk orang ('Aina'), maka kata tanya yang tepat ialah 'Siapakah'."
+      },
+      {
+        level: "Aras 3: Padanan Jawapan",
+        context: "💬 Jawapan yang diberi: \"Bas sekolah saya biasanya sampai pada pukul 6:45 pagi.\"",
+        q: "Apakah ayat tanya yang sesuai bagi jawapan di atas?",
+        options: [
+          "Di manakah bas sekolah kamu biasanya sampai?",
+          "Mengapakah bas sekolah kamu biasanya sampai?",
+          "Berapakah bas sekolah kamu biasanya sampai?",
+          "Bilakah bas sekolah kamu biasanya sampai?" // Betul (Pilihan 4)
+        ],
+        answer: "Bilakah bas sekolah kamu biasanya sampai?",
+        explanation: "Jawapan menyatakan waktu/masa ('pukul 6:45 pagi'), maka soalan menggunakan 'Bilakah'."
+      },
+      {
+        level: "Aras 3: Padanan Jawapan",
+        context: "💬 Jawapan yang diberi: \"Kita hendaklah membuang sampah ke dalam tong sampah.\"",
+        q: "Apakah ayat tanya yang sesuai bagi jawapan di atas?",
+        options: [
+          "Berapakah cara kita hendak menjaga kebersihan alam sekitar?",
+          "Bagaimanakah cara kita hendak menjaga kebersihan alam sekitar?", // Betul (Pilihan 2)
+          "Siapakah yang hendak menjaga kebersihan alam sekitar?",
+          "Apakah sampah yang perlu dibuang ke dalam tong sampah?"
+        ],
+        answer: "Bagaimanakah cara kita hendak menjaga kebersihan alam sekitar?",
+        explanation: "Jawapan menerangkan cara/langkah tindakan, maka soalan menggunakan 'Bagaimanakah'."
+      }
+    ];
+
+    let playerName = "";
+    let playerClass = "";
+    let currentQIndex = 0;
+    let score = 0;
+    let canAnswer = true;
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    function validateAndStart() {
+      playerName = document.getElementById('player-name').value.trim();
+      playerClass = document.getElementById('player-class').value.trim();
+
+      if (!playerName || !playerClass) {
+        alert("Sila masukkan Nama dan Kelas anda terlebih dahulu!");
+        return;
+      }
+
+      document.getElementById('player-tag').textContent = `${playerName} (${playerClass})`;
+      startGame();
+    }
+
+    function startGame() {
+      currentQIndex = 0;
+      score = 0;
+      showScreen('quiz-screen');
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      canAnswer = true;
+      const q = questions[currentQIndex];
+
+      document.getElementById('current-q').textContent = currentQIndex + 1;
+      document.getElementById('score').textContent = score;
+      document.getElementById('level-badge').textContent = q.level;
+
+      // Reset & Hide feedback box
+      const fbBox = document.getElementById('feedback-box');
+      fbBox.className = 'feedback-box';
+      fbBox.textContent = '';
+
+      // Set Context jika ada (Aras 2 / 3)
+      const contextContainer = document.getElementById('context-container');
+      if (q.context) {
+        contextContainer.innerHTML = `<div class="context-box">${q.context}</div>`;
+      } else {
+        contextContainer.innerHTML = '';
+      }
+
+      document.getElementById('question').textContent = q.q;
+
+      // Render Options
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+
+      // Tentukan mod paparan grid (1 kolum jika ayat panjang)
+      if (q.options[0].length > 15) {
+        optionsContainer.className = 'options-grid';
+      } else {
+        optionsContainer.className = 'options-grid two-cols';
+      }
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn-option';
+        btn.innerHTML = `<span class="opt-number">${idx + 1}</span> <span>${opt}</span>`;
+        btn.onclick = () => selectAnswer(btn, opt, q.answer, q.explanation);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(selectedBtn, selectedOpt, correctOpt, explanation) {
+      if (!canAnswer) return;
+      canAnswer = false;
+
+      const buttons = document.querySelectorAll('.btn-option');
+      const fbBox = document.getElementById('feedback-box');
+
+      if (selectedOpt === correctOpt) {
+        selectedBtn.classList.add('correct');
+        score += 10;
+        document.getElementById('score').textContent = score;
+
+        fbBox.className = 'feedback-box show correct-bg';
+        fbBox.innerHTML = `✅ <b>Tahniah, Betul!</b><br><small>${explanation}</small>`;
+      } else {
+        selectedBtn.classList.add('wrong');
+        buttons.forEach(btn => {
+          if (btn.innerText.includes(correctOpt)) {
+            btn.classList.add('correct');
+          }
+        });
+
+        fbBox.className = 'feedback-box show wrong-bg';
+        fbBox.innerHTML = `❌ <b>Kurang Tepat!</b><br><small>${explanation}</small>`;
+      }
+
+      setTimeout(() => {
+        currentQIndex++;
+        if (currentQIndex < questions.length) {
+          loadQuestion();
+        } else {
+          endGame();
+        }
+      }, 2200);
+    }
+
+    function endGame() {
+      showScreen('result-screen');
+      document.getElementById('result-player-info').textContent = `Detektif: ${playerName} | Kelas: ${playerClass}`;
+      document.getElementById('final-score').textContent = score;
+
+      const msg = document.getElementById('feedback-msg');
+      let pangkat = "";
+
+      if (score >= 130) {
+        pangkat = "🏆 Detektif Pakar (Cemerlang)";
+        msg.textContent = pangkat + " - Syabas, penguasaan kata tanya anda amat cemerlang!";
+        msg.style.color = "var(--success)";
+      } else if (score >= 90) {
+        pangkat = "👍 Detektif Handal (Kepujian)";
+        msg.textContent = pangkat + " - Bagus! Anda menguasai sebahagian besar kata tanya.";
+        msg.style.color = "var(--primary)";
+      } else {
+        pangkat = "💪 Detektif Cilik (Latihan)";
+        msg.textContent = pangkat + " - Teruskan berlatih untuk menjadi Detektif yang lebih hebat!";
+        msg.style.color = "var(--danger)";
+      }
+
+      // Hantar Skor ke Google Sheets jika URL dikonfigurasi
+      sendScoreToGoogleSheets(pangkat);
+    }
+
+    function sendScoreToGoogleSheets(pangkat) {
+      const syncStatus = document.getElementById('sync-status');
+
+      if (!googleScriptUrl) {
+        syncStatus.style.display = 'block';
+        syncStatus.innerHTML = 'ℹ️ <i>Skor tidak dihantar ke Google Sheets (URL belum ditetapkan oleh guru).</i>';
+        return;
+      }
+
+      syncStatus.style.display = 'block';
+      syncStatus.innerHTML = '🔄 Menghantar skor ke Google Sheets guru...';
+
+      const payload = {
+        timestamp: new Date().toLocaleString('ms-MY'),
+        nama: playerName,
+        kelas: playerClass,
+        skor: score,
+        totalQuestions: 15,
+        percentage: Math.round((score / 150) * 100),
+        pangkat: pangkat
+      };
+
+      fetch(googleScriptUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        syncStatus.innerHTML = '✅ <b>Skor berjaya dihantar ke Google Sheets Guru!</b>';
+        syncStatus.style.background = '#d1fae5';
+        syncStatus.style.color = '#065f46';
+      })
+      .catch(err => {
+        syncStatus.innerHTML = '⚠️ Ralat semasa menghantar skor. Sila semak sambungan internet.';
+        syncStatus.style.background = '#ffe4e6';
+        syncStatus.style.color = '#9f1239';
+      });
+    }
+
+    function restartGame() {
+      showScreen('start-screen');
+    }
+
+    function configureGoogleSheets() {
+      const currentUrl = localStorage.getItem('detektif_gs_url') || '';
+      const input = prompt("Masukkan Web App URL dari Google Apps Script anda:\n(Biarkan kosong jika tidak mahu menggunakannya)", currentUrl);
+
+      if (input !== null) {
+        googleScriptUrl = input.trim();
+        localStorage.setItem('detektif_gs_url', googleScriptUrl);
+        if (googleScriptUrl) {
+          alert("✅ Web App URL Google Sheets berjaya disimpan!");
+        } else {
+          alert("ℹ️ URL Google Sheets telah dipadam.");
+        }
+      }
+    }
+  </script>
+</body>
+</html>
